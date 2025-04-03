@@ -1,0 +1,13 @@
+src/__pycache__/__init__.cpython-313.pyc
+src/__pycache__/download.cpython-313.pyc
+src/__pycache__/upload.cpython-313.pyc
+__pycache__/__init__.cpython-313.pyc
+__pycache__/config.cpython-313.pyc
+__pycache__/main.cpython-313.pyc
+.env
+src/utils/__pycache__/__init__.cpython-313.pyc
+src/utils/__pycache__/utils.cpython-313.pyc
+src/__pycache__/job.cpython-313.pyc
+src/__pycache__/status.cpython-313.pyc
+src/__pycache__/websocket_connection.cpython-313.pyc
+schedule.py
