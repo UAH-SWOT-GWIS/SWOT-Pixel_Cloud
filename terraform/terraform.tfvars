@@ -1,0 +1,5 @@
+instance_type="t2.micro"
+aws_region="us-east-1"
+earthdata_username="beckjoh6"
+earthdata_password="IamTippy6!!+2boys&1girl"
+s3_bucket="swot-data-bucket"

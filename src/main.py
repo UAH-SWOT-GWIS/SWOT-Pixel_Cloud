@@ -1,12 +1,14 @@
 from fastapi import FastAPI, BackgroundTasks, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from mangum import Mangum
 
-from src.download import download_data
-from src.websocket_connection import ConnectionManager, connect
-from src.job import JobModel, Job
+from download import download_data
+from websocket_connection import ConnectionManager, connect
+from job import JobModel, Job
 
 app = FastAPI()
+handler = Mangum(app)
 
 app.add_middleware(
     CORSMiddleware,
@@ -34,7 +36,7 @@ async def download(
     
     return JSONResponse(content={
         "message": "success", 
-        "status": "In Progress", 
+        "status": "Downloading in Progress", 
         "reference_id": new_job.job_id
     })
 

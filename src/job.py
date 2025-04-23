@@ -1,7 +1,7 @@
 import random
 import string
 
-from src.status import Status
+from status import Status
 
 class JobModel:
     def __init__(self):
