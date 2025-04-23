@@ -2,9 +2,9 @@ from fastapi import FastAPI, BackgroundTasks, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from src.download import download_data
-from src.websocket_connection import ConnectionManager, connect
-from src.job import JobModel, Job
+from download import download_data
+from websocket_connection import ConnectionManager, connect
+from job import JobModel, Job
 
 app = FastAPI()
 

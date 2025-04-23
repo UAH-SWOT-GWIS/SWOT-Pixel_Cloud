@@ -6,9 +6,9 @@ import boto3
 import requests
 
 from config import s3BucketName, aws_access_key_id, aws_secret_access_key
-from src.websocket_connection import ConnectionManager,send_message
-from src.job import JobModel
-from src.status import Status
+from websocket_connection import ConnectionManager,send_message
+from job import JobModel
+from status import Status
 
 s3 = boto3.client("s3",aws_access_key_id=aws_access_key_id, 
                   aws_secret_access_key=aws_secret_access_key)

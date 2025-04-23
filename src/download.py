@@ -1,11 +1,11 @@
 import earthaccess as ea
 import asyncio
 
-from src.upload import stream_to_s3
-from src.websocket_connection import ConnectionManager, send_message
-from src.job import JobModel
-from src.status import Status
-from src.utils.utils import callWithNonNoneArgs
+from upload import stream_to_s3
+from websocket_connection import ConnectionManager, send_message
+from job import JobModel
+from status import Status
+from utils.utils import callWithNonNoneArgs
 
 auth = ea.login(strategy="environment")
 

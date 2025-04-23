@@ -4,13 +4,13 @@ FROM python:3.12
 WORKDIR /app
 
 # Copy the requirements
-COPY requirements.txt ./
+COPY src/requirements.txt ./
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the application code
-COPY . .
+COPY src/ .
 
 # Expose the port FastAPI runs on
 EXPOSE 8000
