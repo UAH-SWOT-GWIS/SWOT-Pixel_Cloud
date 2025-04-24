@@ -13,9 +13,13 @@ from status import Status
 s3 = boto3.client("s3",aws_access_key_id=aws_access_key_id, 
                   aws_secret_access_key=aws_secret_access_key)
 
-def upload_stream(download_urls, meta_data, job: JobModel, manager: ConnectionManager = None,stream_in_chunks = False):
+def upload_stream(download_urls, meta_data, job: JobModel, manager: ConnectionManager = None,stream_in_chunks = False,auth = None):
     if not download_urls:
         print(f"No download links found")
+        return
+    
+    elif not auth:
+        print(f"Invalid auth credentials")
         return
     
     elif stream_in_chunks:
@@ -45,8 +49,8 @@ def upload_stream(download_urls, meta_data, job: JobModel, manager: ConnectionMa
             s3_location = s3_dir + file_name
         
         try:
-            with fetch_file(url) as response:
-                s3.upload_fileobj(response, s3BucketName, s3_location)
+            response = fetch_file(url,auth)
+            s3.upload_fileobj(response.raw, s3BucketName, s3_location)
             
             print(f"Uploaded {file_name} to s3://{s3BucketName}/{s3_location}")
             loop.call_soon_threadsafe(asyncio.create_task, send_message(f"Uploaded {file_name} to s3://{s3BucketName}/{s3_location}", broadcast=False, manager=manager))
@@ -58,13 +62,13 @@ def upload_stream(download_urls, meta_data, job: JobModel, manager: ConnectionMa
             job.status = Status.ERROR
 
         
-@retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=2))
-def fetch_file(url):
-    response = requests.get(url, stream=True)
+def fetch_file(url, auth):
+    session = auth.get_session()
+    response = session.get(url, stream=True)
     response.raise_for_status()
-    return response.raw
+    return response
 
-def stream_to_s3(granule, job: JobModel, manager: ConnectionManager = None):
+def stream_to_s3(granule, job: JobModel, manager: ConnectionManager = None,auth=None):
     granule_umm = granule.get('umm', {})
     granule_ur = granule_umm.get('GranuleUR', '')
 
@@ -107,5 +111,5 @@ def stream_to_s3(granule, job: JobModel, manager: ConnectionManager = None):
     loop = asyncio.get_running_loop()
     loop.call_soon_threadsafe(asyncio.create_task, send_message(meta_data, broadcast=True, manager=manager))
 
-    upload_stream(download_urls, meta_data, job, manager, stream_chunks)
+    upload_stream(download_urls, meta_data, job, manager, stream_chunks,auth)
     
