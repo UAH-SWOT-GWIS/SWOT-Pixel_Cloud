@@ -4,6 +4,8 @@ exec > >(tee /var/log/user-data.log|logger -t user-data ) 2>&1
 yum update -y
 yum install -y docker
 yum install -y git
+yum install python3 -y
+pip install requests
 
 # Start Docker and add ubuntu user to docker group
 sudo service docker start
@@ -22,13 +24,23 @@ cat <<EOF > /opt/aws/amazon-cloudwatch-agent/bin/config.json
         "collect_list": [
           {
             "file_path": "/var/log/cloud-init.log",
-            "log_group_name": "/ec2/fastapi/cloud-init",
-            "log_stream_name": "{instance_id}"
+            "log_group_name": "/ec2/swot-api/",
+            "log_stream_name": "{instance_id}-cloud-init.log"
           },
           {
             "file_path": "/var/log/user-data.log",
-            "log_group_name": "/ec2/fastapi/userdata",
-            "log_stream_name": "{instance_id}"
+            "log_group_name": "/ec2/swot-api/",
+            "log_stream_name": "{instance_id}-user-data.log"
+          },
+          {
+            "file_path": "/var/lib/docker/containers/*/*.log",
+            "log_group_name": "/ec2/swot-api/",
+            "log_stream_name": "{hostname}-app.log"
+          },
+          {
+            "file_path": "/var/log/swot-api_cron.log",
+            "log_group_name": "/ec2/swot-api/",
+            "log_stream_name": "{hostname}-cron.log"
           }
         ]
       }
@@ -49,6 +61,8 @@ git clone https://github.com/UAH-SWOT-GWIS/SWOT-Pixel_Cloud.git
 cd SWOT-Pixel_Cloud
 
 chown -R ec2-user:ec2-user /home/ec2-user/SWOT-Pixel_Cloud
+chmod +x /home/ec2-user/SWOT-Pixel_Cloud/schedule.py
+echo "0 0 1 */1 * /usr/bin/python3 /home/ec2-user/SWOT-Pixel_Cloud/schedule.py >> /var/log/swot-api_cron.log 2>&1" | crontab -
 
 export EARTHDATA_USERNAME="${earthdata_username}"
 export EARTHDATA_PASSWORD="${earthdata_password}"
@@ -62,4 +76,5 @@ docker run -d --name swot-container -p 8000:8000 \
   -e EARTHDATA_USERNAME="${earthdata_username}" \
   -e EARTHDATA_PASSWORD="${earthdata_password}" \
   -e S3_BUCKET="${s3_bucket}" \
+  -e PYTHONUNBUFFERED=1 \
   swot
