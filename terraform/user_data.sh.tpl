@@ -24,23 +24,23 @@ cat <<EOF > /opt/aws/amazon-cloudwatch-agent/bin/config.json
         "collect_list": [
           {
             "file_path": "/var/log/cloud-init.log",
-            "log_group_name": "/ec2/swot-api/",
-            "log_stream_name": "{instance_id}-cloud-init.log"
+            "log_group_name": "/ec2/swot-api/{instance_id}",
+            "log_stream_name": "cloud-init.log"
           },
           {
             "file_path": "/var/log/user-data.log",
-            "log_group_name": "/ec2/swot-api/",
-            "log_stream_name": "{instance_id}-user-data.log"
+            "log_group_name": "/ec2/swot-api/{instance_id}",
+            "log_stream_name": "user-data.log"
           },
           {
             "file_path": "/var/lib/docker/containers/*/*.log",
-            "log_group_name": "/ec2/swot-api/",
-            "log_stream_name": "{hostname}-app.log"
+            "log_group_name": "/ec2/swot-api/{instance_id}",
+            "log_stream_name": "app.log"
           },
           {
             "file_path": "/var/log/swot-api_cron.log",
-            "log_group_name": "/ec2/swot-api/",
-            "log_stream_name": "{hostname}-cron.log"
+            "log_group_name": "/ec2/swot-api/{instance_id}",
+            "log_stream_name": "cron.log"
           }
         ]
       }
