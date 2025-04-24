@@ -3,3 +3,8 @@ __pycache__/
 .env
 src/utils/__pycache__/
 schedule.py
+terraform/terraform.tfvars
+
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+terraform/.terraform*

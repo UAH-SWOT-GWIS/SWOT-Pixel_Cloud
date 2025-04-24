@@ -1,0 +1,5 @@
+instance_type=""
+aws_region=""
+earthdata_username=""
+earthdata_password=""
+s3_bucket=""
