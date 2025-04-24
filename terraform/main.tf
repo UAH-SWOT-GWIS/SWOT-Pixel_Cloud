@@ -130,7 +130,12 @@ resource "aws_instance" "swot_web" {
   subnet_id     = aws_subnet.public.id
   vpc_security_group_ids      = [aws_security_group.ec2_sg.id]
   iam_instance_profile = aws_iam_instance_profile.instance_profile.name
-  user_data              = file("user_data.sh")
+  # user_data              = file("user_data.sh")
+  user_data = templatefile("${path.module}/user_data.sh.tpl", {
+    earthdata_username = var.earthdata_username,
+    earthdata_password = var.earthdata_password,
+    s3_bucket          = var.s3_bucket
+  })
   tags = {
     Name = "SWOT"
   }
