@@ -87,6 +87,15 @@ resource "aws_security_group" "ec2_sg" {
   }
 }
 
+resource "aws_security_group_rule" "allow_websocket" {
+  type        = "ingress"
+  from_port   = 8000 
+  to_port     = 8000
+  protocol    = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.ec2_sg.id
+}
+
 resource "aws_iam_role" "ec2_role" {
   name = "fastapi-ec2-role"
 
