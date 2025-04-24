@@ -1,9 +1,8 @@
 from datetime import datetime
-from tenacity import retry, stop_after_attempt, wait_exponential
+import traceback
 
 import asyncio
 import boto3
-import requests
 
 from config import s3BucketName, aws_access_key_id, aws_secret_access_key
 from websocket_connection import ConnectionManager,send_message
@@ -58,11 +57,13 @@ def upload_stream(download_urls, meta_data, job: JobModel, manager: ConnectionMa
 
         except Exception as e:
             print(f"Failed to upload {file_name}: {str(e)}")
+            traceback.print_exc()
             loop.call_soon_threadsafe(asyncio.create_task, send_message(f"Error uploading {file_name}: {str(e)}", broadcast=False, manager=manager))
             job.status = Status.ERROR
 
         
 def fetch_file(url, auth):
+    print(f"auth : {vars(auth)}")
     session = auth.get_session()
     response = session.get(url, stream=True)
     response.raise_for_status()
