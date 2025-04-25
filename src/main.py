@@ -34,7 +34,7 @@ async def download(
     
     return JSONResponse(content={
         "message": "success", 
-        "status": "In Progress", 
+        "status": "Downloading in progress", 
         "reference_id": new_job.job_id
     })
 
