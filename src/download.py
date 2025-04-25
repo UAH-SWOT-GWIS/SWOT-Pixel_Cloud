@@ -71,4 +71,4 @@ async def download_data(
     for pixc in pixc_result:
         for granule in pixc:
             if granule:
-                stream_to_s3(granule,job,manager,auth)
+                await asyncio.to_thread(stream_to_s3, granule, job, manager, auth)

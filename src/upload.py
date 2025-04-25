@@ -29,7 +29,7 @@ def upload_stream(download_urls, meta_data, job: JobModel, manager: ConnectionMa
     
     s3_dir = f"{meta_data.get('pass', 'unknown')}/{meta_data.get('tile', 'unknown')}/{meta_data.get('date', 'unknown')}/"
 
-    loop = asyncio.get_running_loop()
+    # loop = asyncio.get_running_loop()
     
     print(f"downloading urls {download_urls}")
 
@@ -37,8 +37,7 @@ def upload_stream(download_urls, meta_data, job: JobModel, manager: ConnectionMa
         file_name = url.split('/')[-1]
         print(f"Downloading {file_name} from {url}")
 
-        loop.call_soon_threadsafe(asyncio.create_task, 
-                                  send_message(f"Downloading {file_name} from {url}", 
+        asyncio.run(send_message(f"Downloading {file_name} from {url}", 
                                                broadcast=False, manager=manager))
 
         # Stream the file directly to S3
@@ -52,17 +51,18 @@ def upload_stream(download_urls, meta_data, job: JobModel, manager: ConnectionMa
             s3.upload_fileobj(response.raw, s3BucketName, s3_location)
             
             print(f"Uploaded {file_name} to s3://{s3BucketName}/{s3_location}")
-            loop.call_soon_threadsafe(asyncio.create_task, send_message(f"Uploaded {file_name} to s3://{s3BucketName}/{s3_location}", broadcast=False, manager=manager))
+            asyncio.run(send_message(f"Uploaded {file_name} to s3://{s3BucketName}/{s3_location}", broadcast=False, manager=manager))
             job.status = Status.JOB_COMPLETE
 
         except Exception as e:
             print(f"Failed to upload {file_name}: {str(e)}")
             traceback.print_exc()
-            loop.call_soon_threadsafe(asyncio.create_task, send_message(f"Error uploading {file_name}: {str(e)}", broadcast=False, manager=manager))
+            asyncio.run(send_message(f"Error uploading {file_name}: {str(e)}", broadcast=False, manager=manager))
             job.status = Status.ERROR
 
         
 def fetch_file(url, auth):
+    print("auth", vars(auth))
     session = auth.get_session()
     response = session.get(url, stream=True)
     response.raise_for_status()
@@ -107,9 +107,7 @@ def stream_to_s3(granule, job: JobModel, manager: ConnectionManager = None,auth=
         "date": str(date),
         "urls": download_urls
     }
-
-    loop = asyncio.get_running_loop()
-    loop.call_soon_threadsafe(asyncio.create_task, send_message(meta_data, broadcast=True, manager=manager))
+    asyncio.run(send_message(meta_data, broadcast=True, manager=manager))
 
     upload_stream(download_urls, meta_data, job, manager, stream_chunks,auth)
     
