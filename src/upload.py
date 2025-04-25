@@ -63,7 +63,6 @@ def upload_stream(download_urls, meta_data, job: JobModel, manager: ConnectionMa
 
         
 def fetch_file(url, auth):
-    print(f"auth : {vars(auth)}")
     session = auth.get_session()
     response = session.get(url, stream=True)
     response.raise_for_status()
